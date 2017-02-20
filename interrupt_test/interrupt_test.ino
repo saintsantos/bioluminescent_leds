@@ -8,10 +8,13 @@
 
 #define PIXEL_PIN 6    // Digital IO pin connected to the NeoPixels.
 
-#define PIXEL_COUNT 30
+#define PIXEL_COUNT 2
 
 volatile int cue = 0;
+int timeout = 0;
+volatile bool trigger = false;
 int stripNum= 2;   //change for number of tapes
+int buttonState = 1;
 
 // Parameter 1 = number of pixels in strip,  neopixel stick has 8
 // Parameter 2 = pin number (most are valid)
@@ -24,10 +27,28 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT * stripNum, 6, NEO_GRB +
 
 void Dec(){
   cue = cue -1;
+  delay(100);
 }
 
 void Inc(){
-  cue = cue + 1;
+  delay(100);
+ switch(cue){
+  case -1:
+    cue = 0;
+    break;
+  case 0:
+    cue = 1;
+    break;
+  case 1:
+    cue = 2;
+    break;
+  case 2:
+    cue = 3;
+    break;
+  case 3:
+    cue = 0;
+    break;
+ }
 }
 
 
@@ -39,12 +60,35 @@ void setup() {
   
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
+
   
 }
 
 void loop() {
-  Serial.print("Cue: "); Serial.println(cue);
+  /*buttonState = digitalRead(BUTTON_PIN_GO);
+  Serial.println(buttonState);
+  if(buttonState == 0*/
+  //Serial.println(cue);
+  /*while(buttonState) {
+    buttonState = digitalRead(BUTTON_PIN_GO);
+    //Serial.println(buttonState);
+    delay(100);
+  }*/
+  /*if (buttonState == 1) {
+    buttonState = digitalRead(BUTTON_PIN_GO);
+    Serial.print("Button: ");Serial.println(buttonState);
+  } else {
+    if (cue == 3) {
+      cue = 0;
+    } else {
+      cue++; 
+    }
+    delay(5);
+    buttonState = 1;
+  }*/
+  Serial.println(cue);
   show();
+
 }
 
 void show(){
@@ -95,7 +139,7 @@ void twoPulse(int high, int low, double redMult, double blueMult, uint8_t wait){
 void rainbowCycle(uint8_t wait) {
   uint16_t i, j;
 
-  for(j=0; j<256 * 2; j++) { // 5 cycles of all colors on wheel
+  for(j=0; j<256 * 1; j++) { // 5 cycles of all colors on wheel
       for(i=0; i< 60; i++) {
         strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
       }
